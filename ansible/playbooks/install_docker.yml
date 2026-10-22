@@ -1,0 +1,35 @@
+
+---
+- name: Instalar y preparar Docker en el cluster
+  hosts: bigdata
+  become: true
+  gather_facts: true
+
+  tasks:
+    - name: Actualizar la caché de paquetes
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 3600
+
+    - name: Instalar Docker y sus dependencias
+      ansible.builtin.apt:
+        name:
+          - docker.io
+          - python3-docker
+        state: present
+
+    - name: Habilitar e iniciar el servicio Docker
+      ansible.builtin.service:
+        name: docker
+        state: started
+        enabled: true
+
+    - name: Comprobar que Docker está instalado
+      ansible.builtin.command:
+        cmd: docker --version
+      register: docker_version
+      changed_when: false
+
+    - name: Mostrar la versión de Docker
+      ansible.builtin.debug:
+        msg: "{{ inventory_hostname }}: {{ docker_version.stdout }}"
