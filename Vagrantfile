@@ -1,6 +1,6 @@
-master_ip=192.168.56.10
-worker1_ip=192.168.56.11
-worker2_ip=192.168.56.12
+master_ip="192.168.56.10"
+worker1_ip="192.168.56.11"
+worker2_ip="192.168.56.12"
 
 
 Vagrant.configure("2") do |config|
