@@ -1,0 +1,68 @@
+---
+- name: NameNode del master
+  hosts: masters
+  become: true
+
+  tasks:
+    - name: Añadir workers al /etc/hosts del master
+      ansible.builtin.lineinfile:
+        path: /etc/hosts
+        line: "{{ item }}"
+        state: present
+      loop:
+        - "192.168.56.11 worker1"
+        - "192.168.56.12 worker2"
+
+    - name: Crear volumen persistente del NameNode
+      community.docker.docker_volume:
+        name: hdfs_namenode
+        state: present
+
+    - name: Lanzar contenedor NameNode
+      community.docker.docker_container:
+        name: namenode
+        image: bde2020/hadoop-namenode:2.0.0-hadoop3.2.1-java8
+        state: started
+        recreate: false
+        restart_policy: unless-stopped
+        network_mode: host
+        volumes:
+          - "hdfs_namenode:/hadoop/dfs/name"
+        env:
+          CLUSTER_NAME: "bigdata-cluster"
+          CORE_CONF_fs_defaultFS: "hdfs://192.168.56.10:9000"
+          HDFS_CONF_dfs_replication: "2"
+
+- name: HDFS DataNode para los workers
+  hosts: workers
+  become: true
+
+  tasks:
+    - name: Añadir nodos del clúster a /etc/hosts de los workers
+      ansible.builtin.lineinfile:
+        path: /etc/hosts
+        line: "{{ item }}"
+        state: present
+      loop:
+        - "192.168.56.10 master"
+        - "192.168.56.11 worker1"
+        - "192.168.56.12 worker2"
+
+    - name: Crear volumen persistente del DataNode
+      community.docker.docker_volume:
+        name: hdfs_datanode
+        state: present
+
+    - name: Contenedor DataNode
+      community.docker.docker_container:
+        name: datanode
+        image: bde2020/hadoop-datanode:2.0.0-hadoop3.2.1-java8
+        state: started
+        recreate: false
+        restart_policy: unless-stopped
+        network_mode: host
+        volumes:
+          - "hdfs_datanode:/hadoop/dfs/data"
+        env:
+          CORE_CONF_fs_defaultFS: "hdfs://192.168.56.10:9000"
+          HDFS_CONF_dfs_replication: "2"

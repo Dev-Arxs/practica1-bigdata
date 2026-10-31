@@ -1,6 +1,6 @@
-master_ip=192.168.56.10
-worker1_ip=192.168.56.11
-worker2_ip=192.168.56.12
+master_ip="192.168.56.10"
+worker1_ip="192.168.56.11"
+worker2_ip="192.168.56.12"
 
 
 Vagrant.configure("2") do |config|
@@ -39,6 +39,15 @@ Vagrant.configure("2") do |config|
       vb.name = "bigdata-worker2"
       vb.memory = 1536
       vb.cpus = 1
+    end
+
+    worker2.trigger.after :up do |trigger|
+      trigger.name = "Aprovisionamiento automatico con Ansible"
+      trigger.info = "Ejecutando el script de aprovisionamiento desde WSL..."
+
+      trigger.run = {
+        inline: "wsl.exe --cd \"#{File.expand_path(__dir__)}\" --exec bash scripts/provision-wsl.sh"
+      }
     end
   end
 end

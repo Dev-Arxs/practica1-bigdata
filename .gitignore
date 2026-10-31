@@ -1,3 +1,4 @@
 .vagrant/
+hdfs-backup-user/
 *.log
 .env

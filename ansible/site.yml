@@ -1,6 +1,4 @@
-
 ---
 - import_playbook: playbooks/install_docker.yml
-
-# En las siguientes etapas añadiremos aquí
-# la configuración de HDFS y Spark.
+- import_playbook: playbooks/deploys_hdfs.yml
+- import_playbook: playbooks/deploys_spark.yml
