@@ -40,5 +40,14 @@ Vagrant.configure("2") do |config|
       vb.memory = 1536
       vb.cpus = 1
     end
+
+    worker2.trigger.after :up do |trigger|
+      trigger.name = "Aprovisionamiento automatico con Ansible"
+      trigger.info = "Ejecutando el script de aprovisionamiento desde WSL..."
+
+      trigger.run = {
+        inline: "wsl.exe --cd \"#{File.expand_path(__dir__)}\" --exec bash scripts/provision-wsl.sh"
+      }
+    end
   end
 end

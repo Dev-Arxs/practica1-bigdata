@@ -9,7 +9,7 @@
         name: spark-master
         image: apache/spark-py
         state: started
-        recreate: true
+        recreate: false
         restart_policy: unless-stopped
         user: "0"
         network_mode: host
@@ -27,7 +27,7 @@
         name: spark-worker
         image: apache/spark-py
         state: started
-        recreate: true
+        recreate: false
         restart_policy: unless-stopped
         user: "0"
         network_mode: host
